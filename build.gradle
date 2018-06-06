@@ -1,3 +1,7 @@
+configurations.all {
+	exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+}
+
 buildscript {
 	ext {
 		springBootVersion = '2.0.2.RELEASE'
@@ -27,6 +31,7 @@ repositories {
 
 
 dependencies {
+	compile 'com.google.guava:guava:11.0.2'
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-mustache')
 	compile('org.springframework.boot:spring-boot-starter-web')
@@ -41,6 +46,8 @@ dependencies {
 	runtime('com.h2database:h2')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+
+	testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.2.0'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.2.0'

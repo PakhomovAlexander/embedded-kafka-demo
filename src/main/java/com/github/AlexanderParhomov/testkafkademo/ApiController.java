@@ -1,21 +1,38 @@
 package com.github.AlexanderParhomov.testkafkademo;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.github.AlexanderParhomov.testkafkademo.kafka.KafkaService;
+import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
 
-    final VisitsRepository visitsRepository;
+    @Autowired
+    KafkaService kafkaService;
 
-    public ApiController(VisitsRepository visitsRepository) {
-        this.visitsRepository = visitsRepository;
+    ImmutableList<SampleMessage> data = ImmutableList.of(
+            new SampleMessage(1, "first message"),
+            new SampleMessage(2, "second message"),
+            new SampleMessage(3, "third message")
+    );
+
+
+    @PostMapping("/produce/all")
+    public void produceAll() {
+        kafkaService.produceJson("test-topic", data.stream()
+                                                   .map(SampleMessage::toJson)
+                                                   .collect(Collectors.toList()));
     }
 
-    @GetMapping("/visits")
-    public Iterable<Visit> getVisits() {
-        return visitsRepository.findAll();
+    @GetMapping("/consume/all")
+    public Collection<String> consumeAll() {
+        return kafkaService.consumeJson("test-topic", data.size());
     }
 }

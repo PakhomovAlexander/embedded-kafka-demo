@@ -17,44 +17,35 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EmbeddedKafkaTest {
-    List<SampleMessage> messages = ImmutableList.of(
+    private static final String TOPIC_NAME = "test-kafka";
+    private static final long POLL_TIMEOUT = 100;
+    private static final int IDLE_COUNT = 2;
+
+    private List<SampleMessage> messages = ImmutableList.of(
             new SampleMessage(1, "first message"),
             new SampleMessage(2, "second message"),
             new SampleMessage(3, "third message")
     );
 
+    private List<String> jsons = messages.stream()
+                                         .map(SampleMessage::toJson)
+                                         .collect(Collectors.toList());
+
     @Rule
     public TestKafkaRule kafkaRule = new TestKafkaRule();
-
-    ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void messagesProducedAndConsumed() {
         KafkaUtils utils = new KafkaUtils(kafkaRule.getKafka().getConfiguration());
-        utils.produce(
-                StringSerializer.class,
-                "test-kafka",
-                messages.stream()
-                        .map(SampleMessage::toJson)
-                        .collect(Collectors.toList())
-        );
+
+        utils.produce(StringSerializer.class, TOPIC_NAME, jsons);
 
         Collection<String> consumedMessages = utils.consume(StringDeserializer.class,
-                                                            "test-kafka",
-                                                            100, 2, messages.size()
+                                                            TOPIC_NAME,
+                                                            POLL_TIMEOUT, IDLE_COUNT,
+                                                            messages.size()
         );
-        List<SampleMessage> messagesFromKafka = consumedMessages.stream()
-                                                                .map(this::getMessageFromJson)
-                                                                .collect(Collectors.toList());
 
-        assertEquals(messages, messagesFromKafka);
-    }
-
-    private SampleMessage getMessageFromJson(String json) {
-        try {
-            return mapper.readValue(json, SampleMessage.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        assertEquals(jsons, consumedMessages);
     }
 }

@@ -21,7 +21,7 @@ public class TestKafkaServiceImpl implements KafkaService {
     private static final Class<StringDeserializer> JSON_DESERIALIZER_CLASS = StringDeserializer.class;
 
     private static final long POLL_TIMEOUT = 100;
-    private static final int IDLE_COUNT = 1;
+    private static final int IDLE_COUNT = 3;
 
 
     private TestKafka kafka;

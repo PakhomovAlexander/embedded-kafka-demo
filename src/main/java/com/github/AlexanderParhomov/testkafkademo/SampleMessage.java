@@ -16,10 +16,12 @@
 package com.github.AlexanderParhomov.testkafkademo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.persistence.Entity;
 import java.util.Objects;
 
 public class SampleMessage {
@@ -28,7 +30,8 @@ public class SampleMessage {
 
 	private final String message;
 
-	private final ObjectMapper mapper;
+	@JsonIgnore
+	private transient final ObjectMapper mapper;
 
 
 	@JsonCreator

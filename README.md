@@ -1,0 +1,2 @@
+# Example project showing an usage of [embeded-kafka](https://github.com/PakhomovAlexander/embedded-kafka-unit)
+See [TestKafkaServiceImpl](src/main/java/com/github/AlexanderParhomov/testkafkademo/kafka/TestKafkaServiceImpl.java)
